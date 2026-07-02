@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HelloController {
 
-    @GetMapping("hello")
+    @GetMapping("/hello")
     public String greet(HttpServletRequest request) {
         System.out.println("This is the session ID : " + request.getSession().getId());
-        return "Hello World " + request.getSession().getId();
+        return "Hello World ";
     }
 
     @GetMapping("/about")

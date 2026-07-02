@@ -22,85 +22,42 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//        just because we have written this securityfilterchain method the spring security defualt setting (which is asking username, password) goes away, because we are doing configuration by ourselves.
 
-        http.csrf(customizer -> customizer.disable()); // this disables the csrf
+        http.csrf(customizer -> customizer.disable())
+                        .authorizeHttpRequests(request -> request
+                                .requestMatchers("/register")
+                                .permitAll()
+                                .anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        http.authorizeHttpRequests(request -> request.anyRequest().authenticated()); //this means we are enableing askin username password for any request.
-//        http.formLogin(Customizer.withDefaults()); //we dont need when you have stateless
-        http.httpBasic(Customizer.withDefaults()); // This will give the popup instead of the sign in page.
+        http.httpBasic(Customizer.withDefaults()).sessionManagement(session ->
 
-        //making stateless, because it is making stateful by default, basically we want to get new session
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+        );
 
         return http.build();
 
     }
 
-    //These is something i got from gpt, because one method called withdefaultPasswordEncoder is not working because that is removed in the new spring version.
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder();
-//    }
-
-//    @Bean
-//    public UserDetailsService userDetailsService() {
-//
-//        UserDetails user = User.builder()
-//                .username("star")
-//                .password(passwordEncoder().encode("123@123"))
-//                .roles("USER")
-//                .build();
-//
-//        UserDetails admin = User.builder()
-//                .username("admin")
-//                .password(passwordEncoder().encode("1234@"))
-//                .roles("ADMIN")
-//                .build();
-//
-//        return new InMemoryUserDetailsManager(user, admin  );
-//
-//    }
-
-
 
     @Autowired
-    //5. the userdetailservie is an interface. and we have to implement it, and the way we have implemented it by creating, MyUserDetailService.java (to go MyUserDetailsService.java)
     private UserDetailsService userDetailsService;
 
-    //1. what we were trying to achieve is, we were trying to authenticate users from the DB and the way to achieve that is, we need to change our authenticate provider.
-    //2.  And we want to say that we want to connect to DB.
 
 
     @Bean
     public AuthenticationProvider authProvider() {
 
-        //3. to connect with DB, we use DAO authentication provider, because DAO is your DB access
-        //4. And then to achieve that we have to specify the userdetailservice.
-
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-
-//        provider.setUserDetailsPasswordService((UserDetailsPasswordService) userDetailsService);
         provider.setPasswordEncoder(new BCryptPasswordEncoder(12));
-
         return provider;
 
     }
-
-
 }
 
-
-// encoded (student)
-//id =2
+// This is when the new user can access our regiter endpoint and register for the first time by themselves in mydb users table db.
+// first user
+//id = 1
 //username = hardi
-//password = 1@2
-//
-
-
-//encoded registered
-//id = 4
-//username = john
-//password = j@12
-
-//mann & star won't work because their passwords are in plaintext.
+//password = h@12

@@ -13,7 +13,7 @@ public class UserController {
     @Autowired
     private UserService service;
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public User register(@RequestBody User user) {
 
         return service.saveUser(user);
