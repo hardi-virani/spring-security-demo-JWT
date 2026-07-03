@@ -8,13 +8,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-// 15 UserPrincipal is the class which implements the UserDetails and principal mean current user
-// 16 And in this particular class we have multiple methods three methods for one for the authority, one for username, one for password.
-// 17. Apart from this, others are for your expiry, for your account and for your credentials.
-// 18. Basically you have your table and your class which represents that, which is your user class(go to User.java) continues...
+
 public class UserPrincipal implements UserDetails {
 
-    //Whatever data we are getting from userdetails in MyUserDetailsService, we are assigning that here, so we can use that in other methods.
     private User user;
 
     public UserPrincipal(User user) {
