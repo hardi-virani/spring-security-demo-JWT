@@ -1,4 +1,4 @@
-package com.star.spring_security_demo;
+package com.star.spring_security_demo.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
@@ -21,6 +22,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 public class SecurityConfig {
 
 //    private UserDetails User;
+
+
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,7 +38,11 @@ public class SecurityConfig {
                                 .requestMatchers("/register", "/login") //making the URL to be accessible to anyone for the first time user or the old user to be able to login.
                                 .permitAll()
                                 .anyRequest().authenticated())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+
+                //we added addFilterbefore here, which basically means, we are saying to our spring is, hey before you call usernamepasswordAutheticationFilter by default, call jwtFilter.
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.httpBasic(Customizer.withDefaults()).sessionManagement(session ->
 
@@ -43,8 +55,6 @@ public class SecurityConfig {
     }
 
 
-    @Autowired
-    private UserDetailsService userDetailsService;
 
 
 
@@ -70,3 +80,8 @@ public class SecurityConfig {
 //id = 1
 //username = hardi
 //password = h@12
+
+//id = 2
+//username = star
+//password = s@12
+
